@@ -3,6 +3,7 @@ class Bank:
         self.name = name
         self.__all_accounts = []
         self.loan_status = True
+        self.bank_balance = 0
 
     def create_bank_account(self, name, email, password):
         account = Bank_account(name, email, password)
@@ -46,6 +47,9 @@ class Bank:
     def get_loan_status(self):
         return self.loan_status
 
+    def set_bank_balance(self, amount):
+        self.bank_balance += amount
+
     # def __repr__(self) -> str:
     #     # print(len(self.__all_accounts))
     #     print(self.loan_status)
@@ -64,12 +68,14 @@ class Bank_account:
     def deposit(self, amount):
         self.my_balance += amount
         self.transactions.append(f'Deposited amount: ${amount}')
+        world_bank.set_bank_balance(amount)
         print(
             f'{self.name} deposited ${amount} successfully! New Balance: ${self.my_balance}\n')
 
     def withdraw(self, amount):
         if self.my_balance >= amount:
             self.my_balance -= amount
+            world_bank.set_bank_balance(-amount)
             self.transactions.append(f'Withdrawal amount: ${amount}')
             print(
                 f'{self.name} withdrawal ${amount} successfully! New Balance: ${self.my_balance}\n')
@@ -101,10 +107,10 @@ class Bank_account:
         print('\n-------------End------------\n')
 
     def take_loan(self, amount):
-        if self.my_loan > 0:
+        if self.my_loan > 0 and world_bank.bank_balance > self.my_balance * 2:
             print(
                 f'Sorry, you can\'t take loan twice, your previous loan amount is ${self.my_loan}\n')
-        elif world_bank.get_loan_status() == True:
+        elif world_bank.get_loan_status() == True and world_bank.bank_balance > self.my_balance * 2:
             if amount <= self.my_balance * 2:
                 self.my_loan = amount
                 self.transactions.append(f"Given loan: ${self.my_loan}")
@@ -177,3 +183,5 @@ user2.take_loan(2000)
 print("-------After Active Loan---------\n")
 world_bank.active_loan(admin)
 user2.take_loan(2000)
+
+# print(world_bank.bank_balance)
